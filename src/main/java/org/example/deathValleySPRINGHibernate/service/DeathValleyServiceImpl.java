@@ -2,7 +2,6 @@ package org.example.deathValleySPRINGHibernate.service;
 
 
 import org.example.deathValleySPRINGHibernate.DAO.PersonDAO;
-import org.example.deathValleySPRINGHibernate.DAO.PersonDAOHibernate;
 import org.example.deathValleySPRINGHibernate.model.Account;
 import org.example.deathValleySPRINGHibernate.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,8 @@ public class DeathValleyServiceImpl implements DeathValleyService {
     @Override
     public User getRichestUser() {
         List<Account> allAccounts = personDAO.getAllAccounts();
-        Optional<Map.Entry<Integer, Integer>> maxEntry = maxEntry(allAccounts);
-        return personDAO.getUserById(maxEntry.get().getKey());
+        Integer richestUserId = getRichestUserId(allAccounts);
+        return personDAO.getUserById(richestUserId);
     }
 
     @Override
@@ -35,7 +34,7 @@ public class DeathValleyServiceImpl implements DeathValleyService {
         allAccounts.forEach(o->list.add(o.getAccount()));
         return list.stream().reduce(0, (a, b) -> a + b);
     }
-    Optional<Map.Entry<Integer, Integer>> maxEntry(List<Account> allAccounts){
+    Integer getRichestUserId(List<Account> allAccounts){
         Map<Integer,Integer> mapUIdSumAcc =new HashMap<>();
         for (Account account : allAccounts) {
             int userId=account.getUser().getUserId();
@@ -49,7 +48,7 @@ public class DeathValleyServiceImpl implements DeathValleyService {
          return mapUIdSumAcc.entrySet()
                 .stream()
                 .max(Comparator.comparing(Map.Entry::getValue)
-                );
+                ).get().getKey();
 
     }
 }
